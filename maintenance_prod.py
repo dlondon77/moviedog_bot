@@ -14,7 +14,7 @@ TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN')
 
 # URL картинки (прямо в коде, без конфига)
 # Здесь нужно будет заменить на новую картинку с переездом
-MAINTENANCE_IMAGE_URL = "https://i.postimg.cc/9Q9q1dYW/image.jpg"
+MAINTENANCE_IMAGE_URL = "https://postimg.cc/FYmBQsBx"
 
 # Логирование
 logging.basicConfig(
