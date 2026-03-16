@@ -9,10 +9,11 @@ from telegram.ext import (
     filters
 )
 
-# Токен берется из переменных окружения (настройте в панели Bothost)
+# Токен из переменных окружения Bothost
 TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN')
-# URL картинки для режима обслуживания (можно тоже через переменные окружения)
-MAINTENANCE_IMAGE_URL = os.environ.get('MAINTENANCE_IMAGE_URL', 'https://example.com/maintenance.jpg')
+
+# URL картинки (прямо в коде, без конфига)
+MAINTENANCE_IMAGE_URL = "https://i.postimg.cc/9Q9q1dYW/image.jpg"
 
 # Логирование
 logging.basicConfig(
@@ -45,15 +46,17 @@ async def maintenance_mode(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 def main():
     if not TELEGRAM_TOKEN:
-        logger.error("Токен не найден! Добавьте TELEGRAM_TOKEN в переменные окружения")
+        logger.error("Токен не найден! Добавьте TELEGRAM_TOKEN в переменные окружения Bothost")
         return
     
     application = Application.builder().token(TELEGRAM_TOKEN).build()
 
+    # Все команды
     commands = ["start", "about", "random", "search", "premiers", "person", "feedback", "faq"]
     for cmd in commands:
         application.add_handler(CommandHandler(cmd, maintenance_mode))
 
+    # Все текстовые сообщения
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, maintenance_mode))
 
     logger.info("🚀 Бот в режиме обслуживания запущен на Bothost")
