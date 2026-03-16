@@ -12,9 +12,8 @@ from telegram.ext import (
 # Токен из переменных окружения Bothost
 TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN')
 
-# URL картинки (прямо в коде, без конфига)
-# Здесь нужно будет заменить на новую картинку с переездом
-MAINTENANCE_IMAGE_URL = "https://postimg.cc/FYmBQsBx"
+# Новая картинка с переездом
+MAINTENANCE_IMAGE_URL = "https://i.postimg.cc/FYmBQsBx/image.jpg"
 
 # Логирование
 logging.basicConfig(
@@ -24,22 +23,22 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 async def maintenance_mode(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Единый обработчик для всех команд в режиме обслуживания"""
+    """Единый обработчик для всех команд в режиме переезда"""
     message = (
-        "🐾 <b>Гав-гав! КиноИщейка переезжает!</b>\n\n"
-        "Прямо сейчас я:\n"
-        "• Упаковываю кинопленку в коробки 📦\n"
+        "🐾 <b>Гав! КиноИщейка собирает чемоданы!</b>\n\n"
+        "Друзья, я временно переезжаю в новое собачье пространство (читай: на новый сервер). Прямо сейчас я:\n"
+        "• Упаковываю кинопленки в коробки 📦\n"
         "• Собираю чемодан с попкорном 🍿\n"
-        "• Ищу новый уютный домик для своих обзоров 🏠\n\n"
-        "<b>Пока я пакую вещи, вы можете найти меня здесь:</b>\n\n"
-        "📱 <b>Другие площадки:</b>\n"
-        "• <a href='https://max.ru/join/6Gr8OAJgFYvmtDwSQE7xZKtZBYRyKYbUnGEk6RIklJY'>Канал в Max</a> – первые обзоры уже там!\n"
-        "• <a href='https://vk.com/club235550414'>Сообщество ВКонтакте</a> – общаемся, спорим, обсуждаем\n"
-        "• <a href='https://vk.com/im/channels/-235633316'>Канал в VK</a> – новости и анонсы\n"
-        "• <a href='https://vk.me/movie_dog?ref=start'>Бот в VK</a> – работает без перебоев!\n\n"
-        "🐕 <b>Telegram-канал:</b>\n"
-        "• <a href='https://t.me/Movie_dog_channel'>КиноИщейка в Telegram</a> – скоро вернусь!\n\n"
-        "<b>Заглядывайте в гости на других площадках, а здесь я откроюсь с обновленным интерьером!</b> 🌟"
+        "• Перенастраиваю киноискательные бизнес-процессы\n\n"
+        "Но главная новость: я уже открыла новую кинолабораторию в VK\n\n"
+        "🤖 <b>КиноИщейка в VK</b> – <a href='https://vk.me/movie_dog?ref=start'>@movie_dog</a>\n"
+        "Работает в бета-версии, но уже умеет искать фильмы и давать свои хвостатые мнения. Функций пока чуть меньше, чем в Telegram, но я активно учусь новым командам!\n\n"
+        "📱 <b>Не забывайте о том, что меня ещё можно читать:</b>\n"
+        "• <a href='https://max.ru/join/6Gr8OAJgFYvmtDwSQE7xZKtZBYRyKYbUnGEk6RIklJY'>Канал в Max</a>\n"
+        "• <a href='https://vk.com/club235550414'>Сообщество ВКонтакте</a>\n"
+        "• и пока <a href='https://t.me/Movie_dog_channel'>Telegram-канал</a>\n\n"
+        "Сюда я скоро вернусь с новыми силами и обновлённым нюхом!\n"
+        "А пока бегите знакомиться с VK-КиноИщейкой – я уже заждалась! 🐕💨"
     )
     
     try:
