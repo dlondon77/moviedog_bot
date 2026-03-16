@@ -13,7 +13,7 @@ from telegram.ext import (
 TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN')
 
 # Новая картинка с переездом
-MAINTENANCE_IMAGE_URL = "https://i.postimg.cc/FYmBQsBx/image.jpg"
+MAINTENANCE_IMAGE_URL = "https://i.postimg.cc/SxzFCnLH/Maintenance_02.jpg"
 
 # Логирование
 logging.basicConfig(
