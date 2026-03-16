@@ -13,6 +13,7 @@ from telegram.ext import (
 TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN')
 
 # URL картинки (прямо в коде, без конфига)
+# Здесь нужно будет заменить на новую картинку с переездом
 MAINTENANCE_IMAGE_URL = "https://i.postimg.cc/9Q9q1dYW/image.jpg"
 
 # Логирование
@@ -25,13 +26,20 @@ logger = logging.getLogger(__name__)
 async def maintenance_mode(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Единый обработчик для всех команд в режиме обслуживания"""
     message = (
-        "🐾 <b>Гав-гав! КиноИщейка на плановом техобслуживании!</b>\n\n"
+        "🐾 <b>Гав-гав! КиноИщейка переезжает!</b>\n\n"
         "Прямо сейчас я:\n"
-        "• Чищу зубы от попкорна 🦷🍿\n"
-        "• Расчесываю шерсть после марафона ужастиков 👻\n"
-        "• Перезагружаю свой собачий процессор 🐕💻\n\n"
-        "Но скоро я вернусь с обновленным нюхом на кино!\n"
-        "Попробуй зайти чуть позже, я уже почти закончила!"
+        "• Упаковываю кинопленку в коробки 📦\n"
+        "• Собираю чемодан с попкорном 🍿\n"
+        "• Ищу новый уютный домик для своих обзоров 🏠\n\n"
+        "<b>Пока я пакую вещи, вы можете найти меня здесь:</b>\n\n"
+        "📱 <b>Другие площадки:</b>\n"
+        "• <a href='https://max.ru/join/6Gr8OAJgFYvmtDwSQE7xZKtZBYRyKYbUnGEk6RIklJY'>Канал в Max</a> – первые обзоры уже там!\n"
+        "• <a href='https://vk.com/club235550414'>Сообщество ВКонтакте</a> – общаемся, спорим, обсуждаем\n"
+        "• <a href='https://vk.com/im/channels/-235633316'>Канал в VK</a> – новости и анонсы\n"
+        "• <a href='https://vk.me/movie_dog?ref=start'>Бот в VK</a> – работает без перебоев!\n\n"
+        "🐕 <b>Telegram-канал:</b>\n"
+        "• <a href='https://t.me/Movie_dog_channel'>КиноИщейка в Telegram</a> – скоро вернусь!\n\n"
+        "<b>Заглядывайте в гости на других площадках, а здесь я откроюсь с обновленным интерьером!</b> 🌟"
     )
     
     try:
@@ -59,7 +67,7 @@ def main():
     # Все текстовые сообщения
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, maintenance_mode))
 
-    logger.info("🚀 Бот в режиме обслуживания запущен на Bothost")
+    logger.info("🚀 Бот в режиме переезда запущен на Bothost")
     application.run_polling()
 
 if __name__ == '__main__':
