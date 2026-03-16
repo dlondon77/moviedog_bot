@@ -36,6 +36,7 @@ async def maintenance_mode(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "📱 <b>Не забывайте о том, что меня ещё можно читать:</b>\n"
         "• <a href='https://max.ru/join/6Gr8OAJgFYvmtDwSQE7xZKtZBYRyKYbUnGEk6RIklJY'>Канал в Max</a>\n"
         "• <a href='https://vk.com/club235550414'>Сообщество ВКонтакте</a>\n"
+        "• <a href='https://vk.com/im/channels/-235633316'>Канал в VK</a>\n"
         "• и пока <a href='https://t.me/Movie_dog_channel'>Telegram-канал</a>\n\n"
         "Сюда я скоро вернусь с новыми силами и обновлённым нюхом!\n"
         "А пока бегите знакомиться с VK-КиноИщейкой – я уже заждалась! 🐕💨"
