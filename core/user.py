@@ -185,7 +185,5 @@ def record_user_opinion(user_id, movie_id):
 
 def is_admin(user_id):
     """Проверяет, является ли пользователь админом"""
-    config = db.config  # Нужно будет импортировать config
-    admin_ids_str = config['Admin']['admin_ids']
-    admin_ids = [int(id.strip()) for id in admin_ids_str.split(',')]
-    return user_id in admin_ids
+    from core.admin import get_admin_ids
+    return user_id in get_admin_ids()
