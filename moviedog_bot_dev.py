@@ -19,11 +19,16 @@ from telegram.ext import (
     filters,
     CallbackQueryHandler,
 )
-#from openai import OpenAI
-from core import admin
+
+# ==================== ОТКЛЮЧЕНИЕ ПРОКСИ ====================
+# Удаляем переменные окружения с прокси, если они есть
+os.environ.pop('HTTP_PROXY', None)
+os.environ.pop('HTTPS_PROXY', None)
+os.environ.pop('http_proxy', None)
+os.environ.pop('https_proxy', None)
 
 # ==================== ИМПОРТЫ CORE ====================
-from core import db, user, movie
+from core import admin, db, user, movie
 
 # ==================== КОНФИГУРАЦИЯ ====================
 
@@ -52,49 +57,54 @@ if not TELEGRAM_TOKEN:
 if not OPENAI_API_KEY:
     raise ValueError("OPENAI_API_KEY не найден! Добавьте в переменные окружения или config.ini")
 
-# Инициализация клиента OpenAI
-#try:
-#    # Пробуем создать клиент с параметрами
-#    client = OpenAI(
-#        api_key=OPENAI_API_KEY,
-#        base_url=OPENAI_BASE_URL,
-#        timeout=60.0,
-#        max_retries=2
-#    )
-#    logger.info("✅ OpenAI клиент успешно инициализирован")
-#except Exception as e:
-#    logger.error(f"❌ Ошибка инициализации OpenAI: {e}")
-#    # Пробуем без дополнительных параметров
-#    try:
-#        client = OpenAI(
-#            api_key=OPENAI_API_KEY,
-#            base_url=OPENAI_BASE_URL
-#        )
-#        logger.info("✅ OpenAI клиент инициализирован (базовая конфигурация)")
-#    except Exception as e2:
-#        logger.error(f"❌ Критическая ошибка OpenAI: {e2}")
-client = None
-        
-# Логирование платежей (с правильным путем)
-payments_logger = logging.getLogger('payments')
-payments_logger.setLevel(logging.INFO)
-payments_handler = logging.FileHandler(PAYMENTS_DB_PATH)  # или config['Logs']['log_path_payments']
-payments_handler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s"))
-payments_logger.addHandler(payments_handler)
+# ==================== НАСТРОЙКА ЛОГИРОВАНИЯ ====================
+
+# Создаем папки для логов, если их нет
+os.makedirs(os.path.dirname(LOG_PATH), exist_ok=True)
+os.makedirs(os.path.dirname(PAYMENTS_DB_PATH), exist_ok=True)
 
 # Основное логирование
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     handlers=[
-        logging.FileHandler(LOG_PATH),
+        logging.FileHandler(LOG_PATH, encoding='utf-8'),
         logging.StreamHandler()
     ]
 )
 logger = logging.getLogger(__name__)
 
+# Логирование платежей (отдельный логгер)
+payments_logger = logging.getLogger('payments')
+payments_logger.setLevel(logging.INFO)
+payments_handler = logging.FileHandler(PAYMENTS_DB_PATH, encoding='utf-8')
+payments_handler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s"))
+payments_logger.addHandler(payments_handler)
+
+# ==================== ИНИЦИАЛИЗАЦИЯ OPENAI ====================
+
+from openai import OpenAI
+
+try:
+    client = OpenAI(
+        api_key=OPENAI_API_KEY,
+        base_url=OPENAI_BASE_URL
+    )
+    logger.info("✅ OpenAI клиент успешно инициализирован")
+except Exception as e:
+    logger.error(f"❌ Ошибка инициализации OpenAI: {e}")
+    client = None
+
+# ==================== ИНИЦИАЛИЗАЦИЯ БАЗ ДАННЫХ ====================
+
 # Инициализируем базы данных
-db.init_db()
+try:
+    db.init_db()
+    logger.info("✅ Базы данных успешно инициализированы")
+except Exception as e:
+    logger.error(f"❌ Ошибка инициализации баз данных: {e}")
+
+# ==================== ДАЛЬШЕ ИДЕТ ОСНОВНОЙ КОД БОТА ====================
 
 # ==================== ФУНКЦИИ ДЛЯ РАБОТЫ С МНЕНИЯМИ ====================
 
