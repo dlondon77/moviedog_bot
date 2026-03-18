@@ -755,14 +755,19 @@ class VKAdapter:
         """Генерирует мнение о фильме через OpenAI"""
         from openai import OpenAI
         import configparser
+        import os
+        
+        BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        CONFIG_PATH = os.path.join(BASE_DIR, 'config', 'config.ini')
         
         config = configparser.ConfigParser()
-        config.read('/volume1/homes/Dima/tgbots/moviedog/dev/config/config.ini')
+        config.read(CONFIG_PATH)
         
-        client = OpenAI(
-            api_key=config['OpenAI']['api_key'],
-            base_url=config['OpenAI']['base_url']
-        )
+        # Берем ключ из переменных окружения или конфига
+        api_key = os.environ.get('OPENAI_API_KEY') or config['OpenAI']['api_key']
+        base_url = config['OpenAI']['base_url']
+        
+        client = OpenAI(api_key=api_key, base_url=base_url)
         
         title = movie_details.get('name', 'Без названия')
         year = movie_details.get('year', '')
