@@ -27,8 +27,6 @@ from core import db, user, movie
 
 # ==================== КОНФИГУРАЦИЯ ====================
 
-# ==================== КОНФИГУРАЦИЯ ====================
-
 # Определяем базовую директорию (корень проекта)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CONFIG_PATH = os.path.join(BASE_DIR, 'config', 'config.ini')
