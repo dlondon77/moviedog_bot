@@ -52,8 +52,22 @@ if not TELEGRAM_TOKEN:
 if not OPENAI_API_KEY:
     raise ValueError("OPENAI_API_KEY не найден! Добавьте в переменные окружения или config.ini")
 
-# Инициализация клиента OpenAI
-client = OpenAI(api_key=OPENAI_API_KEY, base_url=OPENAI_BASE_URL)
+# Инициализация клиента OpenAI (без лишних параметров)
+try:
+    # Для новых версий openai (>=1.0.0)
+    client = OpenAI(
+        api_key=OPENAI_API_KEY,
+        base_url=OPENAI_BASE_URL,
+        timeout=60.0,
+        max_retries=3
+    )
+except TypeError as e:
+    # Если не сработало, пробуем без timeout
+    logger.warning(f"Не удалось создать клиент с параметрами: {e}")
+    client = OpenAI(
+        api_key=OPENAI_API_KEY,
+        base_url=OPENAI_BASE_URL
+    )
 
 # Логирование платежей (с правильным путем)
 payments_logger = logging.getLogger('payments')
