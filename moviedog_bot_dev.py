@@ -23,27 +23,29 @@ import httpx
 from telegram.request import HTTPXRequest
 
 # ==================== ПОЛНОЕ ОТКЛЮЧЕНИЕ ПРОКСИ ====================
-# Удаляем все возможные переменные прокси
+import os
+import httpx
+from telegram.request import HTTPXRequest
+
+# 1. Удаляем все возможные переменные прокси из окружения
 for env_var in ['HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy', 'ALL_PROXY', 'all_proxy']:
     os.environ.pop(env_var, None)
 
-# Создаем кастомный HTTP клиент без прокси
-custom_async_client = httpx.AsyncClient(
-    timeout=httpx.Timeout(30.0),
-    limits=httpx.Limits(max_keepalive_connections=5, max_connections=10),
-    follow_redirects=True
-)
+# 2. Патчим httpx.AsyncClient, чтобы игнорировать параметр 'proxies'
+original_init = httpx.AsyncClient.__init__
+def patched_init(self, *args, **kwargs):
+    if 'proxies' in kwargs:
+        del kwargs['proxies']  # Удаляем проблемный параметр
+    original_init(self, *args, **kwargs)
+httpx.AsyncClient.__init__ = patched_init
 
-# Создаем кастомный HTTPXRequest с нашим клиентом
-custom_request = HTTPXRequest(
-    connection_pool_size=1,
-    connect_timeout=30.0,
-    read_timeout=30.0,
-    write_timeout=30.0,
-    pool_timeout=30.0
-)
-# Подменяем внутренний клиент
-custom_request._client = custom_async_client
+# 3. Для синхронного клиента (OpenAI) тоже делаем патч
+original_sync_init = httpx.Client.__init__
+def patched_sync_init(self, *args, **kwargs):
+    if 'proxies' in kwargs:
+        del kwargs['proxies']
+    original_sync_init(self, *args, **kwargs)
+httpx.Client.__init__ = patched_sync_init
 
 # ==================== ИМПОРТЫ CORE ====================
 from core import admin, db, user, movie
@@ -2834,11 +2836,7 @@ async def show_filtered_movies(update: Update, context: ContextTypes.DEFAULT_TYP
 # ==================== MAIN ====================
 
 def main():
-    # Используем кастомный request вместо стандартного
-    application = Application.builder() \
-        .token(TELEGRAM_TOKEN) \
-        .request(custom_request) \
-        .build()
+    application = Application.builder().token(TELEGRAM_TOKEN).build()
 
     # Обработчики команд
     application.add_handler(CommandHandler("start", start))
