@@ -7,14 +7,23 @@ from datetime import datetime, date, timedelta
 import re
 import os
 
+# Определяем базовую директорию
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+CONFIG_PATH = os.path.join(BASE_DIR, 'config', 'config.ini')
+
 # Загружаем конфигурацию
 config = configparser.ConfigParser()
-config.read('/volume1/homes/Dima/tgbots/moviedog/dev/config/config.ini')
+config.read(CONFIG_PATH)
 
-# Пути к базам данных
-DB_PATH = config['Data']['db_path']
-MOVIES_DB_PATH = config['Data']['movies_db_path']
-PAYMENTS_DB_PATH = config['Data']['payments_db_path']
+# Пути к базам данных (преобразуем относительные в абсолютные)
+DB_PATH = os.path.join(BASE_DIR, config['Data']['db_path'])
+MOVIES_DB_PATH = os.path.join(BASE_DIR, config['Data']['movies_db_path'])
+PAYMENTS_DB_PATH = os.path.join(BASE_DIR, config['Data']['payments_db_path'])
+
+# Создаем папки для баз данных, если их нет
+os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
+os.makedirs(os.path.dirname(MOVIES_DB_PATH), exist_ok=True)
+os.makedirs(os.path.dirname(PAYMENTS_DB_PATH), exist_ok=True)
 
 # Лок для потокобезопасности
 DB_LOCK = threading.Lock()
