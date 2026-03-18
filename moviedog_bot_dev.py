@@ -27,31 +27,44 @@ from core import db, user, movie
 
 # ==================== КОНФИГУРАЦИЯ ====================
 
+# ==================== КОНФИГУРАЦИЯ ====================
+
+# Определяем базовую директорию (корень проекта)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+CONFIG_PATH = os.path.join(BASE_DIR, 'config', 'config.ini')
+
 # Загружаем конфигурацию
 config = configparser.ConfigParser()
-config.read('/volume1/homes/Dima/tgbots/moviedog/dev/config/config.ini')
+config.read(CONFIG_PATH)
 
-# Получаем пути из конфига
-DB_PATH = config['Data']['db_path']
-MOVIES_DB_PATH = config['Data']['movies_db_path']
-LOG_PATH = config['Logs']['log_path']
+# Получаем пути из конфига (преобразуем относительные в абсолютные)
+DB_PATH = os.path.join(BASE_DIR, config['Data']['db_path'])
+MOVIES_DB_PATH = os.path.join(BASE_DIR, config['Data']['movies_db_path'])
+LOG_PATH = os.path.join(BASE_DIR, config['Logs']['log_path'])
+PAYMENTS_DB_PATH = os.path.join(BASE_DIR, config['Data']['payments_db_path'])
 
-# Получаем токены
-TELEGRAM_TOKEN = config['Telegram']['token']
-OPENAI_API_KEY = config['OpenAI']['api_key']
+# Получаем токены (сначала из переменных окружения, потом из конфига)
+TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN') or config['Telegram']['token']
+OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY') or config['OpenAI']['api_key']
 OPENAI_BASE_URL = config['OpenAI']['base_url']
 
-# Изменяем инициализацию клиента OpenAI
+# Проверяем, что токены загружены
+if not TELEGRAM_TOKEN:
+    raise ValueError("TELEGRAM_TOKEN не найден! Добавьте в переменные окружения или config.ini")
+if not OPENAI_API_KEY:
+    raise ValueError("OPENAI_API_KEY не найден! Добавьте в переменные окружения или config.ini")
+
+# Инициализация клиента OpenAI
 client = OpenAI(api_key=OPENAI_API_KEY, base_url=OPENAI_BASE_URL)
 
-# Логирование платежей
+# Логирование платежей (с правильным путем)
 payments_logger = logging.getLogger('payments')
 payments_logger.setLevel(logging.INFO)
-payments_handler = logging.FileHandler(config['Logs']['log_path_payments'])
+payments_handler = logging.FileHandler(PAYMENTS_DB_PATH)  # или config['Logs']['log_path_payments']
 payments_handler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s"))
 payments_logger.addHandler(payments_handler)
 
-# Логирование
+# Основное логирование
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
