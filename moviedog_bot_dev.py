@@ -19,7 +19,7 @@ from telegram.ext import (
     filters,
     CallbackQueryHandler,
 )
-from openai import OpenAI
+#from openai import OpenAI
 from core import admin
 
 # ==================== ИМПОРТЫ CORE ====================
@@ -53,27 +53,27 @@ if not OPENAI_API_KEY:
     raise ValueError("OPENAI_API_KEY не найден! Добавьте в переменные окружения или config.ini")
 
 # Инициализация клиента OpenAI
-try:
-    # Пробуем создать клиент с параметрами
-    client = OpenAI(
-        api_key=OPENAI_API_KEY,
-        base_url=OPENAI_BASE_URL,
-        timeout=60.0,
-        max_retries=2
-    )
-    logger.info("✅ OpenAI клиент успешно инициализирован")
-except Exception as e:
-    logger.error(f"❌ Ошибка инициализации OpenAI: {e}")
-    # Пробуем без дополнительных параметров
-    try:
-        client = OpenAI(
-            api_key=OPENAI_API_KEY,
-            base_url=OPENAI_BASE_URL
-        )
-        logger.info("✅ OpenAI клиент инициализирован (базовая конфигурация)")
-    except Exception as e2:
-        logger.error(f"❌ Критическая ошибка OpenAI: {e2}")
-        client = None
+#try:
+#    # Пробуем создать клиент с параметрами
+#    client = OpenAI(
+#        api_key=OPENAI_API_KEY,
+#        base_url=OPENAI_BASE_URL,
+#        timeout=60.0,
+#        max_retries=2
+#    )
+#    logger.info("✅ OpenAI клиент успешно инициализирован")
+#except Exception as e:
+#    logger.error(f"❌ Ошибка инициализации OpenAI: {e}")
+#    # Пробуем без дополнительных параметров
+#    try:
+#        client = OpenAI(
+#            api_key=OPENAI_API_KEY,
+#            base_url=OPENAI_BASE_URL
+#        )
+#        logger.info("✅ OpenAI клиент инициализирован (базовая конфигурация)")
+#    except Exception as e2:
+#        logger.error(f"❌ Критическая ошибка OpenAI: {e2}")
+client = None
         
 # Логирование платежей (с правильным путем)
 payments_logger = logging.getLogger('payments')
