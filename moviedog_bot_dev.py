@@ -19,51 +19,60 @@ from telegram.ext import (
     filters,
     CallbackQueryHandler,
 )
+import httpx
+from telegram.request import HTTPXRequest
 
-# ==================== ОТКЛЮЧЕНИЕ ПРОКСИ ====================
-# Удаляем переменные окружения с прокси, если они есть
-os.environ.pop('HTTP_PROXY', None)
-os.environ.pop('HTTPS_PROXY', None)
-os.environ.pop('http_proxy', None)
-os.environ.pop('https_proxy', None)
+# ==================== ПОЛНОЕ ОТКЛЮЧЕНИЕ ПРОКСИ ====================
+# Удаляем все возможные переменные прокси
+for env_var in ['HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy', 'ALL_PROXY', 'all_proxy']:
+    os.environ.pop(env_var, None)
+
+# Создаем кастомный HTTP клиент без прокси
+custom_async_client = httpx.AsyncClient(
+    timeout=httpx.Timeout(30.0),
+    limits=httpx.Limits(max_keepalive_connections=5, max_connections=10),
+    follow_redirects=True
+)
+
+# Создаем кастомный HTTPXRequest с нашим клиентом
+custom_request = HTTPXRequest(
+    connection_pool_size=1,
+    connect_timeout=30.0,
+    read_timeout=30.0,
+    write_timeout=30.0,
+    pool_timeout=30.0
+)
+# Подменяем внутренний клиент
+custom_request._client = custom_async_client
 
 # ==================== ИМПОРТЫ CORE ====================
 from core import admin, db, user, movie
 
 # ==================== КОНФИГУРАЦИЯ ====================
-
-# Определяем базовую директорию (корень проекта)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CONFIG_PATH = os.path.join(BASE_DIR, 'config', 'config.ini')
 
-# Загружаем конфигурацию
 config = configparser.ConfigParser()
 config.read(CONFIG_PATH)
 
-# Получаем пути из конфига (преобразуем относительные в абсолютные)
 DB_PATH = os.path.join(BASE_DIR, config['Data']['db_path'])
 MOVIES_DB_PATH = os.path.join(BASE_DIR, config['Data']['movies_db_path'])
 LOG_PATH = os.path.join(BASE_DIR, config['Logs']['log_path'])
 PAYMENTS_DB_PATH = os.path.join(BASE_DIR, config['Data']['payments_db_path'])
 
-# Получаем токены (сначала из переменных окружения, потом из конфига)
 TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN') or config['Telegram']['token']
 OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY') or config['OpenAI']['api_key']
 OPENAI_BASE_URL = config['OpenAI']['base_url']
 
-# Проверяем, что токены загружены
 if not TELEGRAM_TOKEN:
-    raise ValueError("TELEGRAM_TOKEN не найден! Добавьте в переменные окружения или config.ini")
+    raise ValueError("TELEGRAM_TOKEN не найден!")
 if not OPENAI_API_KEY:
-    raise ValueError("OPENAI_API_KEY не найден! Добавьте в переменные окружения или config.ini")
+    raise ValueError("OPENAI_API_KEY не найден!")
 
 # ==================== НАСТРОЙКА ЛОГИРОВАНИЯ ====================
-
-# Создаем папки для логов, если их нет
 os.makedirs(os.path.dirname(LOG_PATH), exist_ok=True)
 os.makedirs(os.path.dirname(PAYMENTS_DB_PATH), exist_ok=True)
 
-# Основное логирование
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -74,7 +83,6 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Логирование платежей (отдельный логгер)
 payments_logger = logging.getLogger('payments')
 payments_logger.setLevel(logging.INFO)
 payments_handler = logging.FileHandler(PAYMENTS_DB_PATH, encoding='utf-8')
@@ -82,13 +90,18 @@ payments_handler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %
 payments_logger.addHandler(payments_handler)
 
 # ==================== ИНИЦИАЛИЗАЦИЯ OPENAI ====================
-
 from openai import OpenAI
 
 try:
+    sync_client = httpx.Client(
+        timeout=30.0,
+        follow_redirects=True
+    )
+    
     client = OpenAI(
         api_key=OPENAI_API_KEY,
-        base_url=OPENAI_BASE_URL
+        base_url=OPENAI_BASE_URL,
+        http_client=sync_client
     )
     logger.info("✅ OpenAI клиент успешно инициализирован")
 except Exception as e:
@@ -96,15 +109,11 @@ except Exception as e:
     client = None
 
 # ==================== ИНИЦИАЛИЗАЦИЯ БАЗ ДАННЫХ ====================
-
-# Инициализируем базы данных
 try:
     db.init_db()
     logger.info("✅ Базы данных успешно инициализированы")
 except Exception as e:
     logger.error(f"❌ Ошибка инициализации баз данных: {e}")
-
-# ==================== ДАЛЬШЕ ИДЕТ ОСНОВНОЙ КОД БОТА ====================
 
 # ==================== ФУНКЦИИ ДЛЯ РАБОТЫ С МНЕНИЯМИ ====================
 
