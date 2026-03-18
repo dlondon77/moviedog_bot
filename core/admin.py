@@ -16,12 +16,20 @@ logger = logging.getLogger('core.admin')
 
 def get_admin_ids():
     """Возвращает список ID администраторов из конфига"""
-    # Читаем конфиг заново, чтобы всегда брать актуальные данные
     import configparser
-    config = configparser.ConfigParser()
-    config.read('/volume1/homes/Dima/tgbots/moviedog/dev/config/config.ini')
+    import os
     
-    admin_ids_str = config['Admin']['admin_ids']
+    # Определяем путь к конфигу относительно этого файла
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    CONFIG_PATH = os.path.join(BASE_DIR, 'config', 'config.ini')
+    
+    config = configparser.ConfigParser()
+    config.read(CONFIG_PATH)
+    
+    admin_ids_str = config.get('Admin', 'admin_ids', fallback='')
+    if not admin_ids_str:
+        return []
+    
     return [int(id.strip()) for id in admin_ids_str.split(',')]
 
 def is_admin(user_id):
