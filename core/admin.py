@@ -4,6 +4,13 @@ import configparser
 from datetime import date, timedelta
 from core import db
 from core.user import get_user_limits
+import os
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+CONFIG_PATH = os.path.join(BASE_DIR, 'config', 'config.ini')
+
+config = configparser.ConfigParser()
+config.read(CONFIG_PATH)
 
 logger = logging.getLogger('core.admin')
 
