@@ -2834,7 +2834,11 @@ async def show_filtered_movies(update: Update, context: ContextTypes.DEFAULT_TYP
 # ==================== MAIN ====================
 
 def main():
-    application = Application.builder().token(TELEGRAM_TOKEN).build()
+    # Используем кастомный request вместо стандартного
+    application = Application.builder() \
+        .token(TELEGRAM_TOKEN) \
+        .request(custom_request) \
+        .build()
 
     # Обработчики команд
     application.add_handler(CommandHandler("start", start))
