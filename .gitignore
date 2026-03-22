@@ -1,0 +1,29 @@
+# Byte-compiled
+__pycache__/
+*.py[cod]
+*.so
+
+# Databases
+*.db
+*.db-journal
+
+# Logs
+logs/*
+!logs/.gitkeep
+
+# Reports
+reports/*
+!reports/.gitkeep
+
+# Backups
+backups/*
+!backups/.gitkeep
+
+# Data files (but keep .gitkeep)
+data/*
+!data/.gitkeep
+
+# Environment
+.env
+venv/
+env/
