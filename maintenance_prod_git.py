@@ -25,7 +25,7 @@ httpx.AsyncClient.__init__ = patched_init
 
 # ==================== КОНФИГУРАЦИЯ ====================
 TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN')
-MAINTENANCE_IMAGE_URL = "https://i.postimg.cc/9Q9q1dYW/image.jpg"
+MAINTENANCE_IMAGE_URL = "https://i.postimg.cc/SxzFCnLH/Maintenance_02.jpg"
 
 logging.basicConfig(
     level=logging.INFO,
