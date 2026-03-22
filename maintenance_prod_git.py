@@ -1,5 +1,6 @@
 import logging
 import os
+import httpx
 from telegram import Update
 from telegram.ext import (
     Application,
@@ -10,8 +11,17 @@ from telegram.ext import (
 )
 
 # ==================== ОТКЛЮЧЕНИЕ ПРОКСИ ====================
+# 1. Удаляем переменные окружения с прокси
 for env_var in ['HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy', 'ALL_PROXY', 'all_proxy']:
     os.environ.pop(env_var, None)
+
+# 2. Патчим httpx.AsyncClient, чтобы игнорировать параметр 'proxies'
+original_init = httpx.AsyncClient.__init__
+def patched_init(self, *args, **kwargs):
+    if 'proxies' in kwargs:
+        del kwargs['proxies']
+    original_init(self, *args, **kwargs)
+httpx.AsyncClient.__init__ = patched_init
 
 # ==================== КОНФИГУРАЦИЯ ====================
 TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN')
