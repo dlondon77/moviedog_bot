@@ -300,8 +300,7 @@ def generate_token(method: str, params: dict) -> str:
     try:
         # Читаем пароль с отключенной интерполяцией
         temp_config = configparser.ConfigParser(interpolation=None)
-        # Используем тот же путь к конфигу, что и в начале файла
-        temp_config.read(CONFIG_PATH)
+        temp_config.read(CONFIG_PATH)  # используем CONFIG_PATH из начала файла
         password = temp_config['Tinkoff']['password']
         
         sign_params = {
