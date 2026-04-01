@@ -12,7 +12,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CONFIG_PATH = os.path.join(BASE_DIR, 'config', 'config.ini')
 
 # Загружаем конфигурацию
-config = configparser.ConfigParser()
+config = configparser.ConfigParser(interpolation=None)
 config.read(CONFIG_PATH)
 
 # Пути к базам данных (преобразуем относительные в абсолютные)
