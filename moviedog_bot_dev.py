@@ -54,7 +54,7 @@ from core import admin, db, user, movie
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CONFIG_PATH = os.path.join(BASE_DIR, 'config', 'config.ini')
 
-config = configparser.ConfigParser()
+config = configparser.ConfigParser(interpolation=None)
 config.read(CONFIG_PATH)
 
 DB_PATH = os.path.join(BASE_DIR, config['Data']['db_path'])
@@ -300,7 +300,8 @@ def generate_token(method: str, params: dict) -> str:
     try:
         # Читаем пароль с отключенной интерполяцией
         temp_config = configparser.ConfigParser(interpolation=None)
-        temp_config.read('/volume1/homes/Dima/tgbots/moviedog/dev/config/config.ini')
+        # Используем тот же путь к конфигу, что и в начале файла
+        temp_config.read(CONFIG_PATH)
         password = temp_config['Tinkoff']['password']
         
         sign_params = {
